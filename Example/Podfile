@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'FLSlideView_Example' do
+  pod 'FLSlideView', :path => '../'
+
+  target 'FLSlideView_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
