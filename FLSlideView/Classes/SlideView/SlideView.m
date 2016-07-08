@@ -19,18 +19,28 @@
 
 @property (assign, nonatomic) UIView *rootTitleView;
 @property (assign, nonatomic) UIView *rootTitleLabel;
+@property (assign, nonatomic) UIView *slideSubView;
 @property (nonatomic) UILabel *viewControllerTitleLabel;
 
 @end
 
 
 @implementation SlideView
-
-- (instancetype)initWithRootView:(UIViewController *)rootViewController ViewController:(UIViewController *)viewController{
+- (void)updateConstraints{
+    
+    [_slideSubView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self);
+    }];
+    
+    [super updateConstraints];
+}
+- (instancetype)initWithRootView:(UIViewController *)rootViewController viewController:(UIViewController *)viewController slideSubView:(UIView *)slideSubView{
     self = [super init];
     if (self) {
         _rootViewController = rootViewController;
         _viewController = viewController;
+        
+        _slideSubView = slideSubView;
         _rootTitleView = rootViewController.navigationItem.titleView;
 
         _rootTitleLabel = [rootViewController.navigationItem.titleView subviews][0];
@@ -51,6 +61,8 @@
         
         [self addGestureRecognizer:[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)]];
         [self addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureRecognized:)]];
+        [self addSubview:_slideSubView];
+        [self needsUpdateConstraints];
         
     }
     return self;
@@ -62,15 +74,6 @@
     CGRect frame = _viewController.view.frame;
     frame.origin.x = (-[[UIScreen mainScreen]bounds].size.width);
     _viewController.view.frame = frame;
-}
-
--(void)setSlideSubView:(UIView *)slideSubView{
-    _slideSubView = slideSubView;
-    [self addSubview:_slideSubView];
-    [_slideSubView mas_makeConstraints:^(MASConstraintMaker *make) {
-       make.edges.equalTo(self);
-    }];
-    
 }
 
 - (void)tapGestureRecognized:(UITapGestureRecognizer *)recognizer

@@ -7,6 +7,7 @@
 //
 
 #import "UIViewController+Slide.h"
+#import "Masonry/Masonry.h"
 
 @implementation UIViewController (Slide)
 
