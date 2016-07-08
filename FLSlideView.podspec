@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'FLSlideView'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of FLSlideView.'
+  s.version          = '1.0.0'
+  s.summary          = 'A slide view with viewcontroller'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,14 +18,14 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+    Customization slide view with viewcontroller.
                        DESC
 
-  s.homepage         = 'https://github.com/<GITHUB_USERNAME>/FLSlideView'
+  s.homepage         = 'https://github.com/FelixLinBH/FLSlideView'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'felix.lin' => 'fly_81211@hotmail.com' }
-  s.source           = { :git => 'https://github.com/<GITHUB_USERNAME>/FLSlideView.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/FelixLinBH/FLSlideView.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '8.0'
@@ -36,7 +36,7 @@ TODO: Add long description of the pod here.
   #   'FLSlideView' => ['FLSlideView/Assets/*.png']
   # }
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  s.public_header_files = 'FLSlideView/Classes/**/*.h'
+  s.frameworks = 'UIKit'
+  s.dependency 'Masonry'
 end

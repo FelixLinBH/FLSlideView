@@ -1,6 +1,5 @@
 # FLSlideView
 
-[![CI Status](http://img.shields.io/travis/felix.lin/FLSlideView.svg?style=flat)](https://travis-ci.org/felix.lin/FLSlideView)
 [![Version](https://img.shields.io/cocoapods/v/FLSlideView.svg?style=flat)](http://cocoapods.org/pods/FLSlideView)
 [![License](https://img.shields.io/cocoapods/l/FLSlideView.svg?style=flat)](http://cocoapods.org/pods/FLSlideView)
 [![Platform](https://img.shields.io/cocoapods/p/FLSlideView.svg?style=flat)](http://cocoapods.org/pods/FLSlideView)
