@@ -34,15 +34,18 @@
     
     [super updateConstraints];
 }
+
 - (instancetype)initWithRootView:(UIViewController *)rootViewController viewController:(UIViewController *)viewController slideSubView:(UIView *)slideSubView{
     self = [super init];
     if (self) {
+        _direction = SlideViewControllerDirectionRight;
+        
         _rootViewController = rootViewController;
         _viewController = viewController;
         
         _slideSubView = slideSubView;
+        
         _rootTitleView = rootViewController.navigationItem.titleView;
-
         _rootTitleLabel = [rootViewController.navigationItem.titleView subviews][0];
         _viewControllerTitleLabel = [[UILabel alloc]initWithFrame:_rootTitleView.bounds];
         _viewControllerTitleLabel.alpha = 0;
@@ -70,7 +73,6 @@
 
 -(void)layoutSubviews{
     [super layoutSubviews];
-    
     CGRect frame = _viewController.view.frame;
     frame.origin.x = (-[[UIScreen mainScreen]bounds].size.width);
     _viewController.view.frame = frame;
@@ -83,6 +85,8 @@
         return;
     }
     [SlideViewSharedInstance sharedInstance].isSlided = YES;
+    
+  
     
     [_rootViewController.view bringSubviewToFront:_viewController.view];
     
@@ -117,6 +121,14 @@
     } completion:^(BOOL finished) {
             
         [_rootViewController.navigationController setNavigationBarHidden:isNextNav];
+
+        if (isNextNav && self.delegate && [self.delegate respondsToSelector:@selector(rootViewController:didShowSlideViewController:)]) {
+            [self.delegate rootViewController:_rootViewController didShowSlideViewController:_viewController];
+        }
+        
+        if (isNextNav && self.delegate && [self.delegate respondsToSelector:@selector(slideViewDidSlide:)]) {
+            [self.delegate slideViewDidSlide:self];
+        }
         
     }];
     
@@ -128,13 +140,14 @@
         return;
     }
     
+    
+    
     [_rootViewController.view bringSubviewToFront:_viewController.view];
     
     CGPoint point = [recognizer translationInView:self];
     if (recognizer.state == UIGestureRecognizerStateBegan) {
         _originPoint = self.frame.origin;
         _originViewControllerPoint = _viewController.view.frame.origin;
-
         if (_rootTitleView != nil) {
             [_rootTitleView addSubview:_viewControllerTitleLabel];
             _originRootViewControllerTitleViewPoint = _rootTitleLabel.frame.origin;
@@ -200,7 +213,17 @@
             _viewControllerTitleLabel.alpha = 1 - titleViewAlpha;
             
         } completion:^(BOOL finished) {
+            
             [_rootViewController.navigationController setNavigationBarHidden:isNextNav];
+            
+            if (isNextNav && self.delegate && [self.delegate respondsToSelector:@selector(rootViewController:didShowSlideViewController:)]) {
+                [self.delegate rootViewController:_rootViewController didShowSlideViewController:_viewController];
+            }
+            
+            if (isNextNav && self.delegate && [self.delegate respondsToSelector:@selector(slideViewDidSlide:)]) {
+                [self.delegate slideViewDidSlide:self];
+            }
+            
         }];
         
         
@@ -210,8 +233,10 @@
 }
 
 - (void)dismiss{
-    [SlideViewSharedInstance sharedInstance].isSlided = NO;
-//    _isSlide = NO;
+    
+    
+    
+    
     [_viewController.view sendSubviewToBack:_rootViewController.view];
     
     [_rootViewController.navigationController setNavigationBarHidden:NO];
@@ -250,6 +275,13 @@
         _viewControllerTitleLabel.alpha = 1 - titleViewAlpha;
         
     } completion:^(BOOL finished) {
+        [SlideViewSharedInstance sharedInstance].isSlided = NO;
+        if (self.delegate && [self.delegate respondsToSelector:@selector(rootViewController:didDismissSlideViewController:)]) {
+            [self.delegate rootViewController:_rootViewController didDismissSlideViewController:_viewController];
+        }
+        if (self.delegate && [self.delegate respondsToSelector:@selector(slideViewDidRollback:)]) {
+            [self.delegate slideViewDidRollback:self];
+        }
         
     }];
 
