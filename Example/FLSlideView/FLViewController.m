@@ -10,8 +10,12 @@
 #import "SlideView.h"
 #import "Masonry/Masonry.h"
 #import "UIViewController+Slide.h"
-@interface FLViewController ()
-@property (nonatomic) SlideView *slideDemo;
+@interface FLViewController ()<SlideViewDelegate>
+@property (nonatomic) SlideView *slideRight;
+@property (nonatomic) SlideView *slideLeft;
+@property (nonatomic) SlideView *slideTop;
+@property (nonatomic) SlideView *slideBottom;
+@property (nonatomic ,assign) SlideView *usedSlideView;
 @end
 
 @implementation FLViewController
@@ -19,14 +23,16 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+//    self.edgesForExtendedLayout = UIRectEdgeNone;
+    
 	// Do any additional setup after loading the view, typically from a nib.
     
-    self.title = @"Demo";
+    // RootViewController setting
     UIView *titleView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 44)];
     
     UILabel *titleLabel = [[UILabel alloc]init];
     titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.text = @"Demo";
+    titleLabel.text = @"Home";
     [titleView addSubview:titleLabel];
     
     [self.navigationItem setTitleView:titleView];
@@ -35,44 +41,107 @@
         make.centerX.equalTo(titleView);
         make.height.and.width.mas_equalTo(100);
     }];
+    
+    // TopViewController
+    _slideTop = [[SlideView alloc]initWithRootView:self viewController:[self createViewControllerWithTitle:@"Top View Controller"] slideSubView:[self createSlideLabelWithTitle:@"Top"]];
+    
+    _slideTop.delegate = self;
+    _slideTop.backgroundColor = [UIColor grayColor];
+    [self.view addSubview:_slideTop];
+    
+    [_slideTop mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.view.mas_top).with.offset(66);
+        make.right.equalTo(self.view.mas_right);
+        make.left.equalTo(self.view.mas_left);
+        make.height.mas_equalTo(50);
+    }];
+    
+    // RightViewController
+    _slideRight = [[SlideView alloc]initWithRootView:self viewController:[self createViewControllerWithTitle:@"Right View Controller"] slideSubView:[self createSlideLabelWithTitle:@"Right"]];
+    _slideRight.delegate = self;
+    _slideRight.backgroundColor = [UIColor grayColor];
+    [self.view addSubview:_slideRight];
+    
+    [_slideRight mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.slideTop.mas_bottom).with.offset(10);
+        make.right.equalTo(self.view.mas_right);
+        make.left.equalTo(self.view.mas_left);
+        make.height.mas_equalTo(50);
+    }];
+    
+    // LeftViewController
+    _slideLeft = [[SlideView alloc]initWithRootView:self viewController:[self createViewControllerWithTitle:@"Left View Controller"] slideSubView:[self createSlideLabelWithTitle:@"Left"]];
+    _slideLeft.delegate = self;
+    _slideLeft.backgroundColor = [UIColor grayColor];
+    [self.view addSubview:_slideLeft];
+    
+    [_slideLeft mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.slideRight.mas_bottom).with.offset(10);
+        make.right.equalTo(self.view.mas_right);
+        make.left.equalTo(self.view.mas_left);
+        make.height.mas_equalTo(50);
+    }];
+    
+    // BottomViewController
+    _slideBottom = [[SlideView alloc]initWithRootView:self viewController:[self createViewControllerWithTitle:@"Bottom View Controller"] slideSubView:[self createSlideLabelWithTitle:@"Bottom"]];
+    _slideBottom.delegate = self;
+    _slideBottom.backgroundColor = [UIColor grayColor];
+    [self.view addSubview:_slideBottom];
+    
+    [_slideBottom mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.equalTo(self.view.mas_bottom);
+        make.right.equalTo(self.view.mas_right);
+        make.left.equalTo(self.view.mas_left);
+        make.height.mas_equalTo(50);
+    }];
 
     
+
+}
+
+- (UILabel *)createSlideLabelWithTitle:(NSString *)title{
+    UILabel *demoLabel = [[UILabel alloc]init];
+    demoLabel.text = title;
+    demoLabel.textAlignment = NSTextAlignmentCenter;
+    return demoLabel;
+}
+
+- (UINavigationController *)createViewControllerWithTitle:(NSString *)title{
     UIViewController *demoViewController = [[UIViewController alloc]init];
     demoViewController.view.backgroundColor = [UIColor yellowColor];
-    demoViewController.title = @"Demo - 1";
+    demoViewController.title = title;
     
     UINavigationController *demoNav = [[UINavigationController alloc]initWithRootViewController:demoViewController];
     demoNav.view.frame = demoViewController.view.frame;
     
-    UILabel *demoLabel = [[UILabel alloc]init];
-    demoLabel.text = @"Demo Slide Label";
-    demoLabel.textAlignment = NSTextAlignmentCenter;
-    
-    _slideDemo = [[SlideView alloc]initWithRootView:self viewController:demoNav slideSubView:demoLabel];
-    _slideDemo.backgroundColor = [UIColor grayColor];
-    [self.view addSubview:_slideDemo];
-    
-    [_slideDemo mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.equalTo(self.view.mas_bottom);
-        make.right.equalTo(self.view.mas_right);
-        make.left.equalTo(self.view.mas_left);
-        make.height.mas_equalTo(100);
-    }];
-    
-    demoViewController.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self   action:@selector(method1)];
+    demoViewController.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self   action:@selector(usedSlideViewDismiss)];
+    return demoNav;
 
 }
 
-- (void)method1{
+
+- (void)usedSlideViewDismiss{
     
-    [_slideDemo dismiss];
+    [_usedSlideView dismiss];
 }
 
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+#pragma mark - SlideViewDelegate
+- (void)rootViewController:(UIViewController *)rootViewController didShowSlideViewController:(UIViewController *)slideViewController{
+    NSLog(@"didShowSlideViewController");
 }
 
+- (void)rootViewController:(UIViewController *)rootViewController didDismissSlideViewController:(UIViewController *)slideViewController{
+    NSLog(@"didDismissSlideViewController");
+}
+
+- (void)slideViewDidSlide:(SlideView *)silderView{
+    NSLog(@"slideViewWillSlide");
+    _usedSlideView = silderView;
+}
+
+- (void)slideViewDidRollback:(SlideView *)silderView{
+    NSLog(@"slideViewWillRollback");
+    _usedSlideView = nil;
+}
 @end
