@@ -54,9 +54,6 @@
         
         [_rootTitleView addSubview:_viewControllerTitleLabel];
 
-        CGRect frame = _viewController.view.frame;
-        frame.origin.x -= [[UIScreen mainScreen]bounds].size.width;
-        _viewController.view.frame = frame;
         [_viewController willMoveToParentViewController:_rootViewController];
         [_rootViewController addChildViewController:_viewController];
         [_rootViewController.view addSubview:_viewController.view];
@@ -71,10 +68,25 @@
     return self;
 }
 
+
 -(void)layoutSubviews{
     [super layoutSubviews];
     CGRect frame = _viewController.view.frame;
-    frame.origin.x = (-[[UIScreen mainScreen]bounds].size.width);
+    switch (_direction) {
+        case SlideViewControllerDirectionLeft:
+            frame.origin.x = (-[[UIScreen mainScreen]bounds].size.width);
+            break;
+        case SlideViewControllerDirectionRight:
+            frame.origin.x = ([[UIScreen mainScreen]bounds].size.width);
+            break;
+        case SlideViewControllerDirectionTop:
+            frame.origin.y = ([[UIScreen mainScreen]bounds].size.height);
+            break;
+        case SlideViewControllerDirectionBottom:
+            frame.origin.y = (-[[UIScreen mainScreen]bounds].size.height);
+            break;
+    }
+    
     _viewController.view.frame = frame;
 }
 
@@ -156,27 +168,38 @@
     }
     
     if (recognizer.state == UIGestureRecognizerStateChanged) {
-        if (point.x > 0) {
+        if ((point.x > 0 && _direction == SlideViewControllerDirectionLeft )|| (point.x < 0 && _direction == SlideViewControllerDirectionRight)) {
             CGRect frame = self.frame;
             frame.origin.x = _originPoint.x + point.x;
             self.frame = frame;
             
             CGRect frameViewControll = _viewController.view.frame;
             frameViewControll.origin.x = _originViewControllerPoint.x + point.x;
-             _viewController.view.frame = frameViewControll;
+            
+            _viewController.view.frame = frameViewControll;
             
             CGRect titleView = _rootTitleLabel.frame;
             titleView.origin.x = _originRootViewControllerTitleViewPoint.x + point.x;
             _rootTitleLabel.frame = titleView;
-            _rootTitleLabel.alpha = 1 - ((_originRootViewControllerTitleViewPoint.x + point.x) * 1.5 ) / ([[UIScreen mainScreen]bounds].size.width);
+            
+           
             
             CGPoint newTitleViewCenter = _viewControllerTitleLabel.center;
-            newTitleViewCenter.x = point.x / 2 - _rootTitleView.frame.origin.x;
+            if (_direction == SlideViewControllerDirectionLeft) {
+                newTitleViewCenter.x = point.x / 2 - _rootTitleView.frame.origin.x;
+                 _rootTitleLabel.alpha = 1 - ((_originRootViewControllerTitleViewPoint.x + point.x) * 1.5 ) / ([[UIScreen mainScreen]bounds].size.width);
+            }else{
+                newTitleViewCenter.x = point.x / 2 + [[UIScreen mainScreen]bounds].size.width;
+                 _rootTitleLabel.alpha = 0.5 - ([[UIScreen mainScreen]bounds].size.width - newTitleViewCenter.x) / ([[UIScreen mainScreen]bounds].size.width / 2);
+            }
+            
             _viewControllerTitleLabel.center = newTitleViewCenter;
 
             _viewControllerTitleLabel.alpha = 1 - _rootTitleLabel.alpha;
 
         }
+        
+        
     }
     if (recognizer.state == UIGestureRecognizerStateEnded) {
         
@@ -188,7 +211,7 @@
         CGFloat titleViewAlpha = 1.0;
         BOOL isNextNav = NO;
         
-        if ([recognizer velocityInView:self].x < 0) {
+        if (([recognizer velocityInView:self].x < 0 && _direction == SlideViewControllerDirectionLeft )|| ([recognizer velocityInView:self].x > 0 && _direction == SlideViewControllerDirectionRight )) {
             frame.origin.x = 0;
             titleView.origin.x = _originRootViewControllerTitleViewPoint.x;
 
@@ -202,6 +225,8 @@
             newTitleViewCenter.x = _rootTitleView.center.x - _rootTitleView.frame.origin.x ;
             isNextNav = YES;
         }
+        
+        
         [SlideViewSharedInstance sharedInstance].isSlided = isNextNav;
         __weak typeof(self) weakSelf = self;
         [UIView animateWithDuration:0.35 animations:^{

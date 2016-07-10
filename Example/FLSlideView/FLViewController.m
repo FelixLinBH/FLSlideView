@@ -16,6 +16,7 @@
 @property (nonatomic) SlideView *slideTop;
 @property (nonatomic) SlideView *slideBottom;
 @property (nonatomic ,assign) SlideView *usedSlideView;
+@property (nonatomic, assign) UINavigationController *tmp;
 @end
 
 @implementation FLViewController
@@ -46,6 +47,7 @@
     _slideTop = [[SlideView alloc]initWithRootView:self viewController:[self createViewControllerWithTitle:@"Top View Controller"] slideSubView:[self createSlideLabelWithTitle:@"Top"]];
     
     _slideTop.delegate = self;
+    _slideTop.direction = SlideViewControllerDirectionTop;
     _slideTop.backgroundColor = [UIColor grayColor];
     [self.view addSubview:_slideTop];
     
@@ -58,6 +60,8 @@
     
     // RightViewController
     _slideRight = [[SlideView alloc]initWithRootView:self viewController:[self createViewControllerWithTitle:@"Right View Controller"] slideSubView:[self createSlideLabelWithTitle:@"Right"]];
+    
+    _slideRight.direction = SlideViewControllerDirectionRight;
     _slideRight.delegate = self;
     _slideRight.backgroundColor = [UIColor grayColor];
     [self.view addSubview:_slideRight];
@@ -71,6 +75,8 @@
     
     // LeftViewController
     _slideLeft = [[SlideView alloc]initWithRootView:self viewController:[self createViewControllerWithTitle:@"Left View Controller"] slideSubView:[self createSlideLabelWithTitle:@"Left"]];
+    
+    _slideLeft.direction = SlideViewControllerDirectionLeft;
     _slideLeft.delegate = self;
     _slideLeft.backgroundColor = [UIColor grayColor];
     [self.view addSubview:_slideLeft];
@@ -85,6 +91,8 @@
     // BottomViewController
     _slideBottom = [[SlideView alloc]initWithRootView:self viewController:[self createViewControllerWithTitle:@"Bottom View Controller"] slideSubView:[self createSlideLabelWithTitle:@"Bottom"]];
     _slideBottom.delegate = self;
+    
+    _slideBottom.direction = SlideViewControllerDirectionBottom;
     _slideBottom.backgroundColor = [UIColor grayColor];
     [self.view addSubview:_slideBottom];
     
@@ -115,10 +123,25 @@
     demoNav.view.frame = demoViewController.view.frame;
     
     demoViewController.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self   action:@selector(usedSlideViewDismiss)];
+    
+    demoViewController.navigationItem.leftBarButtonItem =  [[UIBarButtonItem alloc]initWithTitle:@"PushVC" style:UIBarButtonItemStylePlain target:self   action:@selector(push)];
+    
     return demoNav;
 
 }
 
+- (void)push{
+    UIViewController *demoViewController = [[UIViewController alloc]init];
+    demoViewController.view.backgroundColor = [UIColor redColor];
+    demoViewController.title = @"Test";
+    
+    demoViewController.navigationItem.leftBarButtonItem =  [[UIBarButtonItem alloc]initWithTitle:@"POP UP" style:UIBarButtonItemStylePlain target:self   action:@selector(popup)];
+    [_tmp pushViewController:demoViewController animated:YES];
+}
+
+-(void)popup{
+    [_tmp popViewControllerAnimated:YES];
+}
 
 - (void)usedSlideViewDismiss{
     
@@ -129,6 +152,7 @@
 #pragma mark - SlideViewDelegate
 - (void)rootViewController:(UIViewController *)rootViewController didShowSlideViewController:(UIViewController *)slideViewController{
     NSLog(@"didShowSlideViewController");
+    _tmp = (UINavigationController *)slideViewController;
 }
 
 - (void)rootViewController:(UIViewController *)rootViewController didDismissSlideViewController:(UIViewController *)slideViewController{
