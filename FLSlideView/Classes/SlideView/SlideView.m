@@ -80,10 +80,10 @@
             frame.origin.x = ([[UIScreen mainScreen]bounds].size.width);
             break;
         case SlideViewControllerDirectionTop:
-            frame.origin.y = ([[UIScreen mainScreen]bounds].size.height);
+            frame.origin.y = (-[[UIScreen mainScreen]bounds].size.height);
             break;
         case SlideViewControllerDirectionBottom:
-            frame.origin.y = (-[[UIScreen mainScreen]bounds].size.height);
+            frame.origin.y = ([[UIScreen mainScreen]bounds].size.height);
             break;
     }
     
@@ -175,7 +175,7 @@
             
             CGRect frameViewControll = _viewController.view.frame;
             frameViewControll.origin.x = _originViewControllerPoint.x + point.x;
-            
+           
             _viewController.view.frame = frameViewControll;
             
             CGRect titleView = _rootTitleLabel.frame;
@@ -216,10 +216,17 @@
             titleView.origin.x = _originRootViewControllerTitleViewPoint.x;
 
             frameViewControll.origin.x = (-[[UIScreen mainScreen]bounds].size.width);
+            
             newTitleViewCenter.x = - _viewControllerTitleLabel.frame.size.width;
         }else{
-            titleView.origin.x = [[UIScreen mainScreen]bounds].size.width;
-            frame.origin.x = [[UIScreen mainScreen]bounds].size.width;
+            
+            if (_direction == SlideViewControllerDirectionRight) {
+                frame.origin.x = -[[UIScreen mainScreen]bounds].size.width;
+                titleView.origin.x = -[[UIScreen mainScreen]bounds].size.width;
+            }else if(_direction == SlideViewControllerDirectionLeft) {
+                frame.origin.x = [[UIScreen mainScreen]bounds].size.width;
+                titleView.origin.x = [[UIScreen mainScreen]bounds].size.width;
+            }
             frameViewControll.origin.x = 0;
             titleViewAlpha = 0;
             newTitleViewCenter.x = _rootTitleView.center.x - _rootTitleView.frame.origin.x ;
@@ -267,7 +274,13 @@
     [_rootViewController.navigationController setNavigationBarHidden:NO];
     //
     CGRect frame = self.frame;
-    frame.origin.x = [[UIScreen mainScreen]bounds].size.width;
+    if (_direction == SlideViewControllerDirectionLeft) {
+        frame.origin.x = [[UIScreen mainScreen]bounds].size.width;
+        
+    }else if (_direction == SlideViewControllerDirectionRight) {
+        frame.origin.x = -[[UIScreen mainScreen]bounds].size.width;
+        
+    }
     self.frame = frame;
     //
     //
@@ -286,8 +299,14 @@
     
     frame.origin.x = 0;
     titleView.origin.x = _originRootViewControllerTitleViewPoint.x;
-    frameViewControll.origin.x = (-[[UIScreen mainScreen]bounds].size.width);
-    newTitleView.origin.x = - newTitleView.size.width;
+    if (_direction == SlideViewControllerDirectionLeft) {
+        frameViewControll.origin.x = (-[[UIScreen mainScreen]bounds].size.width);
+        newTitleView.origin.x = - newTitleView.size.width;
+    }else if (_direction == SlideViewControllerDirectionRight) {
+        frameViewControll.origin.x = ([[UIScreen mainScreen]bounds].size.width);
+        newTitleView.origin.x = newTitleView.size.width;
+    }
+    
     __weak typeof(self) weakSelf = self;
     [UIView animateWithDuration:0.35 animations:^{
         
