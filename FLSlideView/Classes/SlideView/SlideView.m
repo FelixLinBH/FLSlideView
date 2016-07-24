@@ -68,7 +68,6 @@
     return self;
 }
 
-
 -(void)layoutSubviews{
     [super layoutSubviews];
     CGRect frame = _viewController.view.frame;
@@ -161,8 +160,6 @@
         return;
     }
     
-    
-    
     [_rootViewController.view bringSubviewToFront:_viewController.view];
     
     CGPoint point = [recognizer translationInView:self];
@@ -173,10 +170,26 @@
             [_rootTitleView addSubview:_viewControllerTitleLabel];
             _originRootViewControllerTitleViewPoint = _rootTitleLabel.frame.origin;
         }
+        
+        if (_direction == SlideViewControllerDirectionTop) {
+            _originViewControllerPoint.y += self.frame.origin.y;
+        }
        
     }
     
     if (recognizer.state == UIGestureRecognizerStateChanged) {
+        if (point.y > 0 && _direction == SlideViewControllerDirectionTop || point.y < 0 && _direction == SlideViewControllerDirectionBottom) {
+            
+            CGRect frame = self.frame;
+            frame.origin.y = _originPoint.y + point.y;
+            self.frame = frame;
+            CGRect frameViewControll = _viewController.view.frame;
+            frameViewControll.origin.y = _originViewControllerPoint.y + point.y;
+            
+            _viewController.view.frame = frameViewControll;
+            
+        }
+        
         if ((point.x > 0 && _direction == SlideViewControllerDirectionLeft )|| (point.x < 0 && _direction == SlideViewControllerDirectionRight)) {
             CGRect frame = self.frame;
             frame.origin.x = _originPoint.x + point.x;
@@ -236,11 +249,18 @@
             if (_direction == SlideViewControllerDirectionRight) {
                 frame.origin.x = -[[UIScreen mainScreen]bounds].size.width;
                 titleView.origin.x = -[[UIScreen mainScreen]bounds].size.width;
+                frameViewControll.origin.x = 0;
             }else if(_direction == SlideViewControllerDirectionLeft) {
                 frame.origin.x = [[UIScreen mainScreen]bounds].size.width;
                 titleView.origin.x = [[UIScreen mainScreen]bounds].size.width;
+                frameViewControll.origin.x = 0;
+            }else if (_direction == SlideViewControllerDirectionTop){
+                frame.origin.y = [[UIScreen mainScreen]bounds].size.height;
+                frameViewControll.origin.y = 0;
+            }else if( _direction == SlideViewControllerDirectionBottom){
+                frame.origin.y = -frame.size.height;
+                frameViewControll.origin.y = 0;
             }
-            frameViewControll.origin.x = 0;
             titleViewAlpha = 0;
             newTitleViewCenter.x = _rootTitleView.center.x - _rootTitleView.frame.origin.x ;
             isNextNav = YES;
