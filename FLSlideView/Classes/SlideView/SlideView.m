@@ -97,8 +97,6 @@
     }
     [SlideViewSharedInstance sharedInstance].isSlided = YES;
     
-  
-    
     [_rootViewController.view bringSubviewToFront:_viewController.view];
     
     _originRootViewControllerTitleViewPoint = _rootTitleLabel.frame.origin;
@@ -108,38 +106,43 @@
     CGRect titleView = _rootTitleLabel.frame;
     CGRect newTitleView = _viewControllerTitleLabel.frame;
     CGFloat titleViewAlpha = 0;
-    BOOL isNextNav = YES;
     
+    CGRect slideView = self.frame;
+    BOOL isNextNav = YES;
     
     if (_direction == SlideViewControllerDirectionLeft) {
         newTitleView.origin.x = - newTitleView.size.width;
         _viewControllerTitleLabel.frame = newTitleView;
         titleView.origin.x = [[UIScreen mainScreen]bounds].size.width;
         frame.origin.x = [[UIScreen mainScreen]bounds].size.width;
-        
-    
         newTitleView.origin.x = _rootTitleView.center.x - (newTitleView.size.width / 2) - _rootTitleView.frame.origin.x;
     }else if (_direction == SlideViewControllerDirectionRight) {
         newTitleView.origin.x = newTitleView.size.width;
         _viewControllerTitleLabel.frame = newTitleView;
-        
         titleView.origin.x = -[[UIScreen mainScreen]bounds].size.width;
         frame.origin.x = -[[UIScreen mainScreen]bounds].size.width;
         newTitleView.origin.x = _rootTitleView.center.x - (newTitleView.size.width / 2) - _rootTitleView.frame.origin.x;
+    }else if (_direction == SlideViewControllerDirectionTop){
+        slideView.origin.y = [[UIScreen mainScreen]bounds].size.height;
+
+    }else if( _direction == SlideViewControllerDirectionBottom){
+        slideView.origin.y = -frame.size.height;
     }
+    frameViewControll.origin.y = 0;
     frameViewControll.origin.x = 0;
+    __weak typeof(self) weakSelf = self;
     [UIView animateWithDuration:0.35 animations:^{
-            
+
         _viewController.view.frame = frameViewControll;
         _viewControllerTitleLabel.frame = newTitleView;
         _rootTitleLabel.frame = titleView;
         _rootTitleLabel.alpha = titleViewAlpha;
         _viewControllerTitleLabel.alpha = 1 - titleViewAlpha;
         [_slideSubView setFrame:frame];
-        
+        [weakSelf setFrame:slideView];
         
     } completion:^(BOOL finished) {
-            
+        
         [_rootViewController.navigationController setNavigationBarHidden:isNextNav];
 
         if (isNextNav && self.delegate && [self.delegate respondsToSelector:@selector(rootViewController:didShowSlideViewController:)]) {
@@ -233,8 +236,9 @@
         CGFloat titleViewAlpha = 1.0;
         BOOL isNextNav = NO;
         
-        if (([recognizer velocityInView:self].x < 0 && _direction == SlideViewControllerDirectionLeft )|| ([recognizer velocityInView:self].x > 0 && _direction == SlideViewControllerDirectionRight )) {
+        if (([recognizer velocityInView:self].x < 0 && _direction == SlideViewControllerDirectionLeft )|| ([recognizer velocityInView:self].x > 0 && _direction == SlideViewControllerDirectionRight )||([recognizer velocityInView:self].y < 0 && _direction == SlideViewControllerDirectionTop) ||([recognizer velocityInView:self].y > 0 && _direction == SlideViewControllerDirectionBottom)) {
             frame.origin.x = 0;
+            frame.origin.y = _originPoint.y;
             titleView.origin.x = _originRootViewControllerTitleViewPoint.x;
             if (_direction == SlideViewControllerDirectionRight) {
                 frameViewControll.origin.x = ([[UIScreen mainScreen]bounds].size.width);
@@ -242,6 +246,10 @@
             }else if (_direction == SlideViewControllerDirectionLeft){
                 frameViewControll.origin.x = (-[[UIScreen mainScreen]bounds].size.width);
                 newTitleViewCenter.x = - _viewControllerTitleLabel.frame.size.width;
+            }else if(_direction == SlideViewControllerDirectionTop){
+                frameViewControll.origin.y = (-[[UIScreen mainScreen]bounds].size.height);
+            }else if(_direction == SlideViewControllerDirectionBottom){
+                frameViewControll.origin.y = ([[UIScreen mainScreen]bounds].size.height);
             }
             
         }else{
@@ -309,10 +317,8 @@
     CGRect frame = self.frame;
     if (_direction == SlideViewControllerDirectionLeft) {
         frame.origin.x = [[UIScreen mainScreen]bounds].size.width;
-        
     }else if (_direction == SlideViewControllerDirectionRight) {
         frame.origin.x = -[[UIScreen mainScreen]bounds].size.width;
-        
     }
     self.frame = frame;
     //
@@ -331,6 +337,7 @@
     //
     
     frame.origin.x = 0;
+
     titleView.origin.x = _originRootViewControllerTitleViewPoint.x;
     if (_direction == SlideViewControllerDirectionLeft) {
         frameViewControll.origin.x = (-[[UIScreen mainScreen]bounds].size.width);
@@ -338,6 +345,12 @@
     }else if (_direction == SlideViewControllerDirectionRight) {
         frameViewControll.origin.x = ([[UIScreen mainScreen]bounds].size.width);
         newTitleView.origin.x = newTitleView.size.width;
+    }else if (_direction == SlideViewControllerDirectionTop) {
+     
+    
+        frameViewControll.origin.y = -[[UIScreen mainScreen]bounds].size.height;
+    }else if (_direction == SlideViewControllerDirectionBottom){
+        frameViewControll.origin.y += [[UIScreen mainScreen]bounds].size.height;
     }
     
     __weak typeof(self) weakSelf = self;
