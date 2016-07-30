@@ -181,7 +181,7 @@
     }
     
     if (recognizer.state == UIGestureRecognizerStateChanged) {
-        if (point.y > 0 && _direction == SlideViewControllerDirectionTop || point.y < 0 && _direction == SlideViewControllerDirectionBottom) {
+        if ((point.y > 0 && _direction == SlideViewControllerDirectionTop )||( point.y < 0 && _direction == SlideViewControllerDirectionBottom)) {
             
             CGRect frame = self.frame;
             frame.origin.y = _originPoint.y + point.y;
