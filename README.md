@@ -4,11 +4,40 @@
 [![License](https://img.shields.io/cocoapods/l/FLSlideView.svg?style=flat)](http://cocoapods.org/pods/FLSlideView)
 [![Platform](https://img.shields.io/cocoapods/p/FLSlideView.svg?style=flat)](http://cocoapods.org/pods/FLSlideView)
 
-## Example
+It provides a silde view with viewcontroller.
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
+## How To Use
 
-## Requirements
+### Import header
+```
+#import "SlideView.h"
+
+```
+
+### Create silde view with viewController
+
+#### Use this method
+
+```
+- (instancetype)initWithRootView:(UIViewController *)rootViewController viewController:(UIViewController *)viewController slideSubView:(UIView *)slideSubView
+```
+#### Provide direction property
+
+```
+@property (nonatomic, assign) SlideViewControllerDirection direction;
+```
+### It provide delegate:
+
+```
+- (void)slideViewDidSlide:(SlideView *)silderView;
+- (void)slideViewDidRollback:(SlideView *)silderView;
+- (void)rootViewController:(UIViewController *)rootViewController didShowSlideViewController:(UIViewController *)slideViewController;
+- (void)rootViewController:(UIViewController *)rootViewController didDismissSlideViewController:(UIViewController *)slideViewController;
+```
+
+## Screen shot
+
+![Editor preferences pane](https://github.com/FelixLinBH/FLSlideView/blob/master/1.gif?raw=true)
 
 ## Installation
 
@@ -19,9 +48,18 @@ it, simply add the following line to your Podfile:
 pod "FLSlideView"
 ```
 
+## Example
+
+To run the example project, clone the repo, and run `pod install` from the Example directory first.
+
+##Dependency
+
+* [**Masonry**](https://github.com/SnapKit/Masonry)
+
+
 ## Author
 
-felix.lin, fly_81211@hotmail.com
+[Felix.lin](mailto:fly_81211@hotmail.com)
 
 ## License
 
