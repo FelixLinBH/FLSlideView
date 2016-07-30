@@ -9,7 +9,6 @@
 #import "FLViewController.h"
 #import "SlideView.h"
 #import "Masonry/Masonry.h"
-#import "UIViewController+Slide.h"
 @interface FLViewController ()<SlideViewDelegate>
 @property (nonatomic) SlideView *slideRight;
 @property (nonatomic) SlideView *slideLeft;
